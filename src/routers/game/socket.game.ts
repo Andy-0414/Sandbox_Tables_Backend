@@ -47,6 +47,7 @@ class RoomManager {
 	}
 	joinRoom(roomName: string, socket: SocketIO.Socket): void {
 		let room = this.findByRoomName(roomName);
+		this.leaveRoom(socket);
 		if (room) {
 			room.joinUser(socket.id);
 		} else {
