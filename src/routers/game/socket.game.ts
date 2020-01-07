@@ -77,12 +77,25 @@ const socketRouter: SocketRouter = (io: SocketIO.Server, socket: SocketIO.Socket
 		socket.emit("game_joinRoom", roomManager.findByRoomName(data.roomName));
 	});
 	socket.on("game_propCreate", (data: PropRequest) => {
-		roomManager.findByRoomName(data.roomName).addProp(data.prop);
-		io.sockets.in(data.roomName).emit("game_propCreate", data.prop);
+		let room = roomManager.findByRoomName(data.roomName);
+		if (room) {
+			room.addProp(data.prop);
+			io.sockets.in(data.roomName).emit("game_propCreate", data.prop);
+		}
+	});
+	socket.on("game_propDelete", (data: PropRequest) => {
+		let room = roomManager.findByRoomName(data.roomName);
+		if (room) {
+			room.deleteProp(data.prop);
+			io.sockets.in(data.roomName).emit("game_propDelete", data.prop);
+		}
 	});
 	socket.on("game_propUpdate", (data: PropRequest) => {
-		roomManager.findByRoomName(data.roomName).updateProp(data.prop);
-		socket.broadcast.in(data.roomName).emit("game_propUpdate", data.prop);
+		let room = roomManager.findByRoomName(data.roomName);
+		if (room) {
+			room.updateProp(data.prop);
+			socket.broadcast.in(data.roomName).emit("game_propUpdate", data.prop);
+		}
 	});
 	socket.on("disconnect", () => {
 		roomManager.leaveRoom(socket);
