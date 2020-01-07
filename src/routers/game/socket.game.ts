@@ -72,6 +72,17 @@ class RoomManager {
 const roomManager = RoomManager.getRoomManager();
 
 const socketRouter: SocketRouter = (io: SocketIO.Server, socket: SocketIO.Socket): void => {
+	socket.on("game_getRooms", () => {
+		socket.emit(
+			"game_getRooms",
+			roomManager.rooms.map(room => {
+				return {
+					roomName: room.roomName,
+					userCount: room.users.size
+				};
+			})
+		);
+	});
 	socket.on("game_joinRoom", (data: JoinRoomRequest) => {
 		roomManager.joinRoom(data.roomName, socket);
 		socket.emit("game_joinRoom", roomManager.findByRoomName(data.roomName));
