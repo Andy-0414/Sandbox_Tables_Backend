@@ -1,14 +1,18 @@
 import * as express from "express";
 import * as http from "http";
+import * as history from "connect-history-api-fallback";
 
 import "dotenv/config";
 import SocketIOManager from "./routers/socket.index";
 
-const app: http.Server = http.createServer(express()); // 서버 객체
+const app: express.Application = express();
+const server: http.Server = http.createServer(app); // 서버 객체
 
-app.listen(3000, () => {
+app.use(history());
+app.use(express.static("public"));
+server.listen(3000, () => {
 	console.log("start server");
 });
-SocketIOManager.start(app);
+SocketIOManager.start(server);
 
 export default app;
