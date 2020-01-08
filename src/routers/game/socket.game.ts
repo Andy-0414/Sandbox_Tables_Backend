@@ -107,7 +107,7 @@ const socketRouter: SocketRouter = (io: SocketIO.Server, socket: SocketIO.Socket
 		let room = roomManager.findByRoomName(data.roomName);
 		if (room) {
 			room.updateProp(data.prop);
-			io.sockets.in(data.roomName).emit("game_propUpdate", data.prop);
+			socket.broadcast.in(data.roomName).emit("game_propUpdate", data.prop);
 		}
 	});
 	socket.on("disconnect", () => {
