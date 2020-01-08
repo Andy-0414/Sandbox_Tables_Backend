@@ -61,11 +61,19 @@ class RoomManager {
 		let roomIdx = this.rooms.findIndex(room => room.users.has(socket.id));
 		if (roomIdx != -1) {
 			let room = this.rooms[roomIdx];
+			socket.leave(room.roomName);
 			if (room.leaveUser(socket.id)) {
 				this.rooms.splice(roomIdx, 1);
 			}
 		}
-		socket.leaveAll();
+	}
+	getPublicRoomList(): any[] {
+		return this.rooms.map(room => {
+			return {
+				roomName: room.roomName,
+				userCount: room.users.size
+			};
+		});
 	}
 }
 
@@ -73,19 +81,13 @@ const roomManager = RoomManager.getRoomManager();
 
 const socketRouter: SocketRouter = (io: SocketIO.Server, socket: SocketIO.Socket): void => {
 	socket.on("game_getRooms", () => {
-		socket.emit(
-			"game_getRooms",
-			roomManager.rooms.map(room => {
-				return {
-					roomName: room.roomName,
-					userCount: room.users.size
-				};
-			})
-		);
+		roomManager.leaveRoom(socket);
+		io.sockets.emit("game_getRooms", roomManager.getPublicRoomList());
 	});
 	socket.on("game_joinRoom", (data: JoinRoomRequest) => {
 		roomManager.joinRoom(data.roomName, socket);
 		socket.emit("game_joinRoom", roomManager.findByRoomName(data.roomName));
+		io.sockets.emit("game_getRooms", roomManager.getPublicRoomList());
 	});
 	socket.on("game_propCreate", (data: PropRequest) => {
 		let room = roomManager.findByRoomName(data.roomName);
@@ -105,11 +107,12 @@ const socketRouter: SocketRouter = (io: SocketIO.Server, socket: SocketIO.Socket
 		let room = roomManager.findByRoomName(data.roomName);
 		if (room) {
 			room.updateProp(data.prop);
-			socket.broadcast.in(data.roomName).emit("game_propUpdate", data.prop);
+			io.sockets.in(data.roomName).emit("game_propUpdate", data.prop);
 		}
 	});
 	socket.on("disconnect", () => {
 		roomManager.leaveRoom(socket);
+		io.sockets.emit("game_getRooms", roomManager.getPublicRoomList());
 	});
 };
 export default socketRouter;

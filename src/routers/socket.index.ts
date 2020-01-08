@@ -17,7 +17,7 @@ class SocketIOManager {
 	start(server: Server) {
 		this.io = SocketIO(server, { origins: "*:*" });
 		this.io.on("connection", socket => {
-			console.log("CONNECT");
+            console.log("CONNECT");
 			this.socketRouters.forEach(socketRouter => socketRouter(this.io, socket));
 		});
 	}
