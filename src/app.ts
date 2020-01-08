@@ -10,7 +10,7 @@ const server: http.Server = http.createServer(app); // 서버 객체
 
 app.use(history());
 app.use(express.static("public"));
-server.listen(3000, () => {
+server.listen(process.env.PORT || 3003, () => {
 	console.log("start server");
 });
 SocketIOManager.start(server);
