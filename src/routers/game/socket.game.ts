@@ -2,10 +2,11 @@ import { SocketRouter } from "../socket.index";
 
 type JoinRoomRequest = { roomName: string };
 type PropRequest = { roomName: string; prop: any };
+type SocketUser = { name: string; id: string };
 
 class Room {
 	public roomName: string;
-	public users: Set<string> = new Set<string>();
+	public users: SocketUser[] = [];
 	public props: Object[] = [];
 
 	constructor(roomName: string) {
@@ -13,11 +14,15 @@ class Room {
 	}
 
 	joinUser(socketId: string): void {
-		this.users.add(socketId);
+		this.users.push({
+			name: "",
+			id: socketId
+		});
 	}
 	leaveUser(socketId: string): boolean {
-		this.users.delete(socketId);
-		return this.users.size <= 0;
+		let idx = this.users.findIndex(user => user.id == socketId);
+		if (idx != -1) this.users.splice(idx, 1);
+		return this.users.length <= 0;
 	}
 
 	addProp(prop: any) {
@@ -57,21 +62,21 @@ class RoomManager {
 		}
 		socket.join(roomName);
 	}
-	leaveRoom(socket: SocketIO.Socket): void {
-		let roomIdx = this.rooms.findIndex(room => room.users.has(socket.id));
+	leaveRoom(socket: SocketIO.Socket): string | undefined {
+		let roomIdx = this.rooms.findIndex(room => room.users.findIndex(user => user.id == socket.id) != -1);
 		if (roomIdx != -1) {
 			let room = this.rooms[roomIdx];
 			socket.leave(room.roomName);
 			if (room.leaveUser(socket.id)) {
 				this.rooms.splice(roomIdx, 1);
-			}
+			} else return room.roomName;
 		}
 	}
 	getPublicRoomList(): any[] {
 		return this.rooms.map(room => {
 			return {
 				roomName: room.roomName,
-				userCount: room.users.size
+				userCount: room.users.length
 			};
 		});
 	}
