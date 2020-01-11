@@ -93,6 +93,7 @@ const socketRouter: SocketRouter = (io: SocketIO.Server, socket: SocketIO.Socket
 		roomManager.joinRoom(data.roomName, socket);
 		socket.emit("game_joinRoom", roomManager.findByRoomName(data.roomName));
 		io.sockets.emit("game_getRooms", roomManager.getPublicRoomList());
+		io.sockets.in(data.roomName).emit("chat_sendMessage", { name: "system", message: `${socket.id} 님이 입장하였습니다.` });
 	});
 	socket.on("game_propCreate", (data: PropRequest) => {
 		let room = roomManager.findByRoomName(data.roomName);
@@ -116,8 +117,9 @@ const socketRouter: SocketRouter = (io: SocketIO.Server, socket: SocketIO.Socket
 		}
 	});
 	socket.on("disconnect", () => {
-		roomManager.leaveRoom(socket);
+		let roomName = roomManager.leaveRoom(socket);
 		io.sockets.emit("game_getRooms", roomManager.getPublicRoomList());
+		io.sockets.in(roomName).emit("chat_sendMessage", { name: "system", message: `${socket.id} 님이 퇴장하였습니다.` });
 	});
 };
 export default socketRouter;
