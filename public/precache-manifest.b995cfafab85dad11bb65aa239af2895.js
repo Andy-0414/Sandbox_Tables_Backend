@@ -1,7 +1,7 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "6312696bf032d9f7c684",
-    "url": "/css/app.3cb61a03.css"
+    "revision": "e617e7f69a973113cec1",
+    "url": "/css/app.1261445e.css"
   },
   {
     "revision": "7fb1f45b710e0d1ca186dd79c7d1113e",
@@ -232,12 +232,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/red_joker.d55a4ada.png"
   },
   {
-    "revision": "6a8f656a9128c109c13b94c5cbb9ce0a",
+    "revision": "54ca8cb89f2232c6bff768bc016b810c",
     "url": "/index.html"
   },
   {
-    "revision": "6312696bf032d9f7c684",
-    "url": "/js/app.019ae304.js"
+    "revision": "e617e7f69a973113cec1",
+    "url": "/js/app.35ee492b.js"
   },
   {
     "revision": "ca813f2ba7182df5c0f0",
