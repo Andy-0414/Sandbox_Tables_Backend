@@ -30,7 +30,7 @@
 		"connect-history-api-fallback": "^1.6.0",
 		"dotenv": "^8.1.0",
 		"express": "^4.17.1",
-		"pm2": "^3.5.1",
+		"pm2": "^5.2.2",
 		"socket.io": "^2.4.0",
 		"webpack": "^4.39.3"
 	}
